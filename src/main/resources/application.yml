@@ -1,0 +1,26 @@
+server:
+  port: 8083
+  servlet:
+    #    context-path: /api
+    session:
+      timeout: 120m
+spring:
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+  main:
+    allow-circular-references: true
+  application:
+    name: application
+  profiles:
+    active: config,dev
+  thymeleaf:
+    enabled: false
+  servlet:
+    multipart:
+      max-file-size: 1000MB
+      max-request-size: 1000MB
+  http:
+    multipart:
+      enabled: false

@@ -1,0 +1,8 @@
+broadcast:
+  swagger:
+    version: 2022.09.1
+    project-title: Application
+    project-description: Application
+    contact-name: Admin
+    contact-website: localhost
+    contact-email: test@gmail.com
