@@ -2,7 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.Singers;
 import com.example.demo.repository.SingersRepo;
-import com.example.demo.service.SingersService;
+import com.example.demo.service.SingersServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,15 +15,15 @@ import java.util.List;
 @RequestMapping("/rest/api/singers")
 public class SingerController {
     @Autowired
-    private SingersRepo singersService;
+    private SingersServiceImpl singersService;
 
     //Create
     @PostMapping("/save")
     public ResponseEntity<String> save(@RequestBody Singers singers){
         ResponseEntity<String> responseEntity = null;
         try{
-            Singers singers2 = singersService.save(singers); //singer '1' created
-            responseEntity = new ResponseEntity<String>("Singer <" + singers2.getSingerPosition() + "> created", HttpStatus.OK);
+            Integer singers2 = singersService.saveSingers(singers); //singer '1' created
+            responseEntity = new ResponseEntity<String>("Singer <" + singers2 + "> created", HttpStatus.OK);
         }catch(Exception e){
             responseEntity = new ResponseEntity<String>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
             e.printStackTrace();
@@ -35,10 +35,10 @@ public class SingerController {
     @PutMapping("/update")
     public ResponseEntity<String> update(@RequestBody Singers singers){
         ResponseEntity<String> responseEntity = null;
-        boolean available = singersService.existsById(singers.getSingerPosition());
+        boolean available = singersService.isAvailable(singers.getSingerPosition());
 
         if(available){
-            singersService.save(singers);
+            singersService.update(singers);
             responseEntity = new ResponseEntity<String>("Updated Successfully", HttpStatus.OK);
         }else{
             responseEntity = new ResponseEntity<String>("Record <"+singers.getSingerPosition()+"> not found",HttpStatus.BAD_REQUEST);
@@ -49,10 +49,10 @@ public class SingerController {
     @DeleteMapping(value="/delete/{id}")
     public ResponseEntity<String> deleteById(@PathVariable Integer id){
         ResponseEntity responseEntity = null;
-        boolean availableSinger = singersService.existsById(id);
+        boolean availableSinger = singersService.isAvailable(id);
 
         if(availableSinger){
-            singersService.deleteById(id);
+            singersService.delete(id);
             responseEntity = new ResponseEntity<String>("Deleted " + id + " successfully", HttpStatus.OK);
         }else{
             responseEntity = new ResponseEntity<String>(id + " Not Exist", HttpStatus.OK);
@@ -64,8 +64,8 @@ public class SingerController {
     public ResponseEntity getSingleSingerById(@PathVariable Integer id){
         ResponseEntity responseEntity = null;
 
-        if(singersService.existsById(id)){
-            Singers oneSinger = singersService.findById(id).orElse(null);
+        if(singersService.isAvailable(id)){
+            Singers oneSinger = singersService.getOneSinger(id);
             responseEntity = new ResponseEntity<Singers>(oneSinger, HttpStatus.OK);
         }else{
             return new ResponseEntity<String>("Record Not Found", HttpStatus.OK);
@@ -77,7 +77,7 @@ public class SingerController {
     @GetMapping(value="/getAllSingers")
     public ResponseEntity getAllSingers(){
         ResponseEntity responseEntity = null;
-        List<Singers> allSingers = singersService.findAll();
+        List<Singers> allSingers = singersService.getAllSingers();
 
         if(allSingers==null || allSingers.isEmpty()){
             String message = "No data found";

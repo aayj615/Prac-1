@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 @Repository
 public interface SingersRepo extends JpaRepository<Singers, Integer> {
-    List<Singers> findAllById(Integer id);
+    List<Singers> findAllBySingerPosition(Integer id);
 }
